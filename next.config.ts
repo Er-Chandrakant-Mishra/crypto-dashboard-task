@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactStrictMode: true,
+  output: "export",
+  basePath: "/crypto-dashboard-nextjs", 
+  assetPrefix: "/crypto-dashboard-nextjs/",
   images: {
+    unoptimized: true, 
     remotePatterns: [
       {
         protocol: "https",

@@ -2,12 +2,13 @@
   "name": "crypto-dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://er-chandrakant-mishra.github.io/crypto-dashboard-task",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "npm run build && npm run export && gh-pages -d out"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.2",
@@ -26,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.0.1",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

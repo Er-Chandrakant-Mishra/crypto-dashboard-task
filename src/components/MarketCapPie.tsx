@@ -16,7 +16,9 @@ export default function MarketCapPie() {
       .sort((a, b) => b.market_cap - a.market_cap)
       .slice(0, 10)
       .map((c) => ({ name: c.symbol.toUpperCase(), value: c.market_cap }));
-    const others = items.slice(10).reduce((sum, c) => sum + c.market_cap, 0);
+    const others = items
+  .slice(10)
+  .reduce((sum: number, c: { market_cap: number }) => sum + c.market_cap, 0);
     if (others > 0) top.push({ name: "OTHERS", value: others });
     return top;
   }, [items]);
