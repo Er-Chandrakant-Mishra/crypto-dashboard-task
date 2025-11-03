@@ -39,10 +39,10 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <BTCSection items={items} formatUsd={formatUsd} />
+      <HeroStats items={items} formatUsd={formatUsd} />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">Top 50 Cryptocurrencies</h1>
+          <h1 className="text-2xl font-semibold bg-gradient-to-r from-fuchsia-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">Top 50 Cryptocurrencies</h1>
           <div className="hidden md:flex gap-1 rounded-md border p-1 bg-white shadow-sm">
             <button onClick={() => setView("table")} className={`px-3 py-1 rounded ${view === "table" ? "bg-black text-white" : "hover:bg-gray-100"}`}>Table</button>
             <button onClick={() => setView("grid")} className={`px-3 py-1 rounded ${view === "grid" ? "bg-black text-white" : "hover:bg-gray-100"}`}>Grid</button>
@@ -78,46 +78,50 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-1">
-          <MarketCapPie />
-        </div>
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-1"><MarketCapPie /></div>
+        <div className="lg:col-span-1"><PromoCard /></div>
         <div className="lg:col-span-2">
       {view === "table" ? (
-        <div className="mt-6 overflow-x-auto rounded-lg border shadow-sm">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 sticky top-0">
+        <div className="mt-6 overflow-x-auto rounded-lg border border-slate-800 shadow-sm bg-slate-900">
+          <table className="min-w-full text-sm text-slate-200">
+            <thead className="bg-slate-900 sticky top-0 text-slate-300">
               <tr>
-                <th className="p-3 border-b">Fav</th>
-                <th className="p-3 border-b text-left">Name</th>
-                <th className="p-3 border-b">Symbol</th>
-                <th className="p-3 border-b">Price (USD)</th>
-                <th className="p-3 border-b">24h %</th>
-                <th className="p-3 border-b">Market Cap</th>
+                <th className="p-3 border-b border-slate-800">Fav</th>
+                <th className="p-3 border-b border-slate-800 text-left">Name</th>
+                <th className="p-3 border-b border-slate-800">Symbol</th>
+                <th className="p-3 border-b border-slate-800">Price (USD)</th>
+                <th className="p-3 border-b border-slate-800">24h %</th>
+                <th className="p-3 border-b border-slate-800">Market Cap</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-slate-800">
               {loading ? (
                 <tr><td className="p-4 text-center" colSpan={6}>Loading...</td></tr>
               ) : filteredSorted.map((c) => {
                 const isFav = favoriteIds.includes(c.id);
+                const positive = c.price_change_percentage_24h >= 0;
                 return (
-                  <tr key={c.id} className="hover:bg-gray-50">
+                  <tr key={c.id} className="hover:bg-slate-800/60">
                     <td className="p-3 text-center">
                       <button aria-label="toggle favorite" onClick={() => dispatch(toggleFavorite(c.id))} className="text-lg">
                         {isFav ? "★" : "☆"}
                       </button>
                     </td>
                     <td className="p-3 text-left">
-                      <Link className="flex items-center gap-2 text-blue-600 hover:underline" href={`/coin/${c.id}`}>
+                      <Link className="flex items-center gap-2 text-sky-400 hover:underline" href={`/coin/${c.id}`}>
                         <Image src={c.image} alt={c.name} width={20} height={20} className="rounded-full" />
                         {c.name}
                       </Link>
                     </td>
-                    <td className="p-3 text-center uppercase text-gray-600">{c.symbol}</td>
+                    <td className="p-3 text-center uppercase text-slate-400">{c.symbol}</td>
                     <td className="p-3 text-right">{formatUsd(c.current_price)}</td>
-                    <td className={`p-3 text-right ${c.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {c.price_change_percentage_24h?.toFixed(2)}%
+                    <td className="p-3 text-right">
+                      <span className={`inline-flex items-center justify-end min-w-[80px] px-2 py-1 rounded-full text-xs font-medium ${
+                        positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+                      }`}>
+                        {positive ? "+" : ""}{c.price_change_percentage_24h?.toFixed(2)}%
+                      </span>
                     </td>
                     <td className="p-3 text-right">{formatCompact(c.market_cap)}</td>
                   </tr>
@@ -151,7 +155,13 @@ export default function Home() {
                 <div className="mt-1 text-xs uppercase text-gray-500">{c.symbol}</div>
                 <div className="mt-4 flex items-end justify-between">
                   <div className="text-lg font-semibold">{formatUsd(c.current_price)}</div>
-                  <div className={`${positive ? "text-green-600" : "text-red-600"} text-sm`}>{c.price_change_percentage_24h?.toFixed(2)}%</div>
+                  <div className="text-sm">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+                    }`}>
+                      {positive ? "+" : ""}{c.price_change_percentage_24h?.toFixed(2)}%
+                    </span>
+                  </div>
                 </div>
                 <div className="mt-2 text-sm text-gray-600">Mkt Cap: {formatCompact(c.market_cap)}</div>
               </Link>
@@ -171,13 +181,62 @@ export default function Home() {
 
 function RealtimeWidget() {
   const [open, setOpen] = useState(false);
-  const [symbol, setSymbol] = useState("AAPL");
+  const [exchange, setExchange] = useState<"BINANCE" | "COINBASE">("BINANCE");
+  const [coinId, setCoinId] = useState<string>("bitcoin");
+  const [manual, setManual] = useState<string>("");
+  const items = useSelector((s: RootState) => s.coins.items);
+
+  const autoSymbol = useMemo(() => {
+    const coin = items.find((c) => c.id === coinId);
+    const base = (coin?.symbol || "BTC").toUpperCase();
+    if (exchange === "BINANCE") return `BINANCE:${base}USDT`;
+    // COINBASE uses hyphen and USD pairs typically
+    return `COINBASE:${base}-USD`;
+  }, [coinId, exchange, items]);
+
+  const symbol = manual.trim() ? manual.trim() : autoSymbol;
+
   return (
-    <div className="rounded border p-4">
-      <div className="flex items-center gap-3">
-        <input value={symbol} onChange={(e) => setSymbol(e.target.value)} className="border rounded px-3 py-2" placeholder="Symbol e.g. BTCUSD, AAPL" />
-        <button className="rounded bg-black text-white px-4 py-2" onClick={() => setOpen(true)}>Open Live Feed</button>
+    <div className="rounded border p-4 bg-white shadow-sm">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <select
+            value={coinId}
+            onChange={(e) => setCoinId(e.target.value)}
+            className="border rounded px-3 py-2 w-full sm:w-56"
+          >
+            {items.slice(0, 50).map((c) => (
+              <option key={c.id} value={c.id}>{c.name} ({c.symbol.toUpperCase()})</option>
+            ))}
+          </select>
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value as any)}
+            className="border rounded px-3 py-2 w-full sm:w-40"
+          >
+            <option value="BINANCE">BINANCE</option>
+            <option value="COINBASE">COINBASE</option>
+          </select>
+          <div className="text-xs text-gray-500">Auto: {autoSymbol}</div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <input
+            value={manual}
+            onChange={(e) => setManual(e.target.value)}
+            className="border rounded px-3 py-2 w-72"
+            placeholder="Override (e.g., BINANCE:SOLUSDT) — optional"
+          />
+          <button onClick={() => setManual("")} className="px-2 py-1 border rounded hover:bg-gray-50">Use Auto</button>
+          <button onClick={() => setManual("BINANCE:BTCUSDT")} className="px-2 py-1 border rounded hover:bg-gray-50">BTC</button>
+          <button onClick={() => setManual("BINANCE:ETHUSDT")} className="px-2 py-1 border rounded hover:bg-gray-50">ETH</button>
+          <button onClick={() => setManual("COINBASE:BTC-USD")} className="px-2 py-1 border rounded hover:bg-gray-50">CB BTC</button>
+        </div>
+        <div className="flex justify-between items-center gap-3">
+          <div className="text-xs text-gray-500 truncate">Subscribing: {symbol}</div>
+          <button className="rounded bg-black text-white px-4 py-2 w-full sm:w-auto" onClick={() => setOpen(true)}>Open Live Feed</button>
+        </div>
       </div>
+      <div className="mt-2 text-xs text-gray-500">Requires NEXT_PUBLIC_FINNHUB_TOKEN in .env.local. Uses your API list to build tokens automatically.</div>
       {open && <RealtimeModal symbol={symbol} onClose={() => setOpen(false)} />}
     </div>
   );
@@ -190,24 +249,61 @@ export const getServerSideProps = wrapper.getServerSideProps((store) => async ()
   return { props: {} };
 });
 
-type BTCSectionProps = { items: Coin[]; formatUsd: (n: number) => string };
-function BTCSection({ items, formatUsd }: BTCSectionProps) {
+type HeroStatsProps = { items: Coin[]; formatUsd: (n: number) => string };
+function HeroStats({ items, formatUsd }: HeroStatsProps) {
+  if (!items.length) return null;
   const btc = items.find((c) => c.id === "bitcoin" || c.symbol?.toLowerCase() === "btc");
-  if (!btc) return null;
-  const positive = btc.price_change_percentage_24h >= 0;
+  const eth = items.find((c) => c.id === "ethereum" || c.symbol?.toLowerCase() === "eth");
+  const totalMcap = items.reduce((sum, c) => sum + (c.market_cap || 0), 0);
+  const btcDom = btc && totalMcap > 0 ? (btc.market_cap / totalMcap) * 100 : 0;
+  const topMover = [...items]
+    .filter((c) => Number.isFinite(c.price_change_percentage_24h))
+    .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0))[0];
   return (
-    <div className="mb-6 rounded-xl border shadow-sm bg-gradient-to-r from-yellow-50 to-white p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Image src={btc.image} alt={btc.name} width={32} height={32} className="rounded-full" />
-          <div>
-            <div className="text-sm text-gray-500">Bitcoin Dashboard</div>
-            <div className="text-xl font-semibold">{formatUsd(btc.current_price)}</div>
+    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {btc && (
+        <div className="rounded-xl border border-white/10 shadow-sm p-4 bg-white/5 backdrop-blur text-white">
+          <div className="text-sm text-gray-500">Bitcoin Price</div>
+          <div className="mt-1 text-2xl font-semibold">{formatUsd(btc.current_price)}</div>
+          <div className="mt-2">
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${btc.price_change_percentage_24h >= 0 ? "bg-white/20" : "bg-white/20"}`}>{btc.price_change_percentage_24h >= 0 ? "+" : ""}{btc.price_change_percentage_24h?.toFixed(2)}%</span>
           </div>
         </div>
-        <div className={`${positive ? "text-green-700" : "text-red-700"} text-sm`}>
-          {btc.price_change_percentage_24h?.toFixed(2)}%
+      )}
+      {eth && (
+        <div className="rounded-xl border border-white/10 shadow-sm p-4 bg-white/5 backdrop-blur text-white">
+          <div className="text-sm text-gray-500">Ethereum Price</div>
+          <div className="mt-1 text-2xl font-semibold">{formatUsd(eth.current_price)}</div>
+          <div className="mt-2">
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20`}>{eth.price_change_percentage_24h >= 0 ? "+" : ""}{eth.price_change_percentage_24h?.toFixed(2)}%</span>
+          </div>
         </div>
+      )}
+      <div className="rounded-xl border border-white/10 shadow-sm p-4 bg-white/5 backdrop-blur text-white">
+        <div className="text-sm text-gray-500">Total Market Cap</div>
+        <div className="mt-1 text-2xl font-semibold">{new Intl.NumberFormat("en-US", { notation: "compact", compactDisplay: "short", style: "currency", currency: "USD" }).format(totalMcap)}</div>
+        <div className="mt-1 text-xs text-gray-500">Across listed assets</div>
+      </div>
+      <div className="rounded-xl border border-white/10 shadow-sm p-4 bg-white/5 backdrop-blur text-white">
+        <div className="text-sm text-gray-500">BTC Dominance</div>
+        <div className="mt-1 text-2xl font-semibold">{btcDom.toFixed(1)}%</div>
+        {topMover && (
+          <div className="mt-2 text-xs">Top mover: {topMover.symbol.toUpperCase()} {topMover.price_change_percentage_24h?.toFixed(2)}%</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PromoCard() {
+  return (
+    <div className="rounded-xl border border-white/10 shadow-sm p-4 bg-gradient-to-br from-indigo-700 via-purple-700 to-fuchsia-700 text-white">
+      <div className="text-sm opacity-80">Liquid Staking Portfolio</div>
+      <div className="mt-2 text-lg font-semibold">Smarter crypto allocations</div>
+      <p className="mt-2 text-xs opacity-80">Connect your wallet to simulate and build a diversified portfolio in seconds.</p>
+      <div className="mt-4 flex gap-2">
+        <button className="px-3 py-2 rounded-md bg-white text-slate-900 text-sm">Connect Wallet</button>
+        <button className="px-3 py-2 rounded-md bg-white/10 border border-white/20 text-white text-sm">Learn more</button>
       </div>
     </div>
   );
